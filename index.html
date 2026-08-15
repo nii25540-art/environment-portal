@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>環境事業部ポータルサイト</title>
+  <style>
+    :root {
+      --brand-red: #e90012;
+      --dark: #202427;
+      --gray-bg: #f2f3f5;
+      --line: #d7dbe0;
+      --text: #222;
+      --muted: #67717c;
+      --card: #ffffff;
+      --shadow: 0 10px 28px rgba(0,0,0,.12);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: "Yu Gothic", "YuGothic", "Meiryo", "Hiragino Kaku Gothic ProN", Arial, sans-serif;
+      background: #d9d9d9;
+      color: var(--text);
+    }
+
+    /* 左固定ナビ */
+    .side-nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 50;
+      width: 104px;
+      height: 100vh;
+      background: #d9d9d9;
+      border-right: 1px solid #c8c8c8;
+      padding-top: 220px;
+    }
+    .side-nav a {
+      display: block;
+      margin: 0 4px 10px 0;
+      padding: 6px 2px;
+      background: #fff;
+      border: 2px solid #333;
+      color: var(--brand-red);
+      font-size: 18px;
+      font-weight: 800;
+      text-align: center;
+      text-decoration: none;
+      box-shadow: inset 0 0 0 1px #ddd;
+    }
+    .side-nav a:hover,
+    .side-nav a.active {
+      background: var(--brand-red);
+      color: #fff;
+    }
+
+    .page {
+      width: min(1180px, calc(100% - 104px));
+      margin-left: 104px;
+      background: #fff;
+      min-height: 100vh;
+      box-shadow: 0 0 0 1px rgba(0,0,0,.04);
+    }
+
+    /* ヒーロー */
+    .hero {
+      position: relative;
+      min-height: 220px;
+      overflow: hidden;
+      color: #fff;
+      background: #333;
+    }
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: url("images/図1.png") center top / cover no-repeat;
+      filter: brightness(.55);
+      transform: scale(1.03);
+    }
+    .hero::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 56%;
+      height: 100%;
+      background: var(--brand-red);
+      clip-path: polygon(0 0, 78% 0, 60% 100%, 0 100%);
+      opacity: .96;
+    }
+    .hero-inner {
+      position: relative;
+      z-index: 2;
+      padding: 46px 56px;
+      min-height: 220px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .hero .label {
+      display: inline-block;
+      width: fit-content;
+      padding: 8px 20px;
+      margin-bottom: 18px;
+      background: rgba(255,255,255,.16);
+      border: 1px solid rgba(255,255,255,.35);
+      border-radius: 999px;
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: .08em;
+    }
+    .hero h1 {
+      margin: 0;
+      font-size: clamp(30px, 4vw, 54px);
+      line-height: 1.1;
+      font-weight: 900;
+      letter-spacing: .04em;
+      text-shadow: 0 2px 8px rgba(0,0,0,.25);
+    }
+    .hero p {
+      margin: 18px 0 0;
+      max-width: 700px;
+      font-size: 18px;
+      line-height: 1.8;
+      text-shadow: 0 1px 6px rgba(0,0,0,.35);
+    }
+
+    .content { padding: 30px 42px 80px; }
+    .section-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 20px;
+      margin-bottom: 18px;
+      border-bottom: 3px solid var(--brand-red);
+      padding-bottom: 10px;
+    }
+    .section-head h2 {
+      margin: 0;
+      font-size: 28px;
+      letter-spacing: .04em;
+    }
+    .section-head p { margin: 0; color: var(--muted); font-size: 14px; }
+
+    /* トップメニュー */
+    .portal-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 1fr 1fr;
+      gap: 18px;
+      margin-bottom: 36px;
+    }
+    .portal-card {
+      position: relative;
+      overflow: hidden;
+      min-height: 210px;
+      border-radius: 4px;
+      background: #111;
+      color: #fff;
+      box-shadow: var(--shadow);
+      text-decoration: none;
+    }
+    .portal-card img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: .62;
+      transition: transform .35s ease, opacity .35s ease;
+    }
+    .portal-card:hover img { transform: scale(1.05); opacity: .72; }
+    .portal-card::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(233,0,18,.78), rgba(0,0,0,.15) 55%, rgba(0,0,0,.55));
+    }
+    .portal-card .txt {
+      position: relative;
+      z-index: 2;
+      padding: 26px;
+      min-height: 210px;
+      display: flex;
+      flex-direction: column;
+      justify-content: end;
+    }
+    .portal-card h3 { margin: 0 0 8px; font-size: 28px; line-height: 1.25; }
+    .portal-card p { margin: 0; line-height: 1.7; font-size: 15px; }
+    .portal-card.large { grid-row: span 2; min-height: 438px; }
+    .portal-card.large .txt { min-height: 438px; }
+
+    /* 画像ページ */
+    .slide-area { margin-top: 28px; }
+    .slide-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .filter-btn,
+    .open-btn {
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--dark);
+      padding: 9px 14px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 14px;
+    }
+    .filter-btn:hover,
+    .filter-btn.active,
+    .open-btn:hover {
+      border-color: var(--brand-red);
+      background: var(--brand-red);
+      color: #fff;
+    }
+    .slide-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0,1fr));
+      gap: 18px;
+    }
+    .slide-card {
+      border: 1px solid var(--line);
+      background: var(--card);
+      border-radius: 6px;
+      overflow: hidden;
+      box-shadow: 0 4px 14px rgba(0,0,0,.08);
+    }
+    .slide-card figure { margin: 0; background: #f7f7f7; }
+    .slide-card img {
+      display: block;
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      object-fit: contain;
+      cursor: zoom-in;
+      background: #eee;
+    }
+    .slide-card .body { padding: 14px 14px 16px; }
+    .slide-card h3 { margin: 0 0 8px; font-size: 17px; }
+    .slide-card p { margin: 0; color: var(--muted); line-height: 1.6; font-size: 13px; }
+
+    .detail-block {
+      margin: 42px 0 0;
+      padding: 26px;
+      background: var(--gray-bg);
+      border-left: 6px solid var(--brand-red);
+      border-radius: 4px;
+    }
+    .detail-block h2 { margin-top: 0; }
+    .detail-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+      gap: 22px;
+      margin-top: 18px;
+    }
+    .detail-item {
+      background: #fff;
+      border: 1px solid var(--line);
+      padding: 18px;
+      border-radius: 5px;
+    }
+    .detail-item h3 { margin: 0 0 10px; color: var(--brand-red); }
+    .detail-item ul { margin: 0; padding-left: 20px; line-height: 1.8; }
+
+    /* Google Map予定地 */
+    .map-placeholder {
+      margin-top: 20px;
+      border: 2px dashed #b9c0c7;
+      background: #fff;
+      min-height: 360px;
+      display: grid;
+      place-items: center;
+      padding: 30px;
+      text-align: center;
+      color: var(--muted);
+    }
+    .map-placeholder strong { color: var(--dark); font-size: 22px; }
+    .map-code {
+      margin-top: 14px;
+      padding: 14px;
+      background: #202427;
+      color: #fff;
+      border-radius: 4px;
+      text-align: left;
+      overflow-x: auto;
+      font-size: 12px;
+    }
+
+    /* 拡大表示 */
+    .lightbox {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      display: none;
+      background: rgba(0,0,0,.82);
+      padding: 26px;
+    }
+    .lightbox.open { display: grid; place-items: center; }
+    .lightbox img {
+      max-width: 96vw;
+      max-height: 90vh;
+      background: #fff;
+      box-shadow: 0 20px 60px rgba(0,0,0,.45);
+    }
+    .lightbox button {
+      position: fixed;
+      top: 18px;
+      right: 18px;
+      border: none;
+      background: var(--brand-red);
+      color: #fff;
+      padding: 10px 16px;
+      font-size: 16px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .note {
+      margin: 18px 0 0;
+      padding: 14px 16px;
+      background: #fff4f4;
+      border: 1px solid #ffd0d0;
+      color: #8b000b;
+      line-height: 1.7;
+      font-size: 14px;
+    }
+
+    @media (max-width: 900px) {
+      .side-nav {
+        position: sticky;
+        top: 0;
+        width: 100%;
+        height: auto;
+        padding: 8px;
+        display: flex;
+        gap: 8px;
+        overflow-x: auto;
+        border-right: none;
+        border-bottom: 1px solid #c8c8c8;
+      }
+      .side-nav a { min-width: 110px; margin: 0; font-size: 15px; }
+      .page { width: 100%; margin-left: 0; }
+      .hero-inner { padding: 34px 24px; }
+      .content { padding: 24px 18px 60px; }
+      .portal-grid { grid-template-columns: 1fr; }
+      .portal-card.large, .portal-card.large .txt { min-height: 260px; }
+      .slide-grid { grid-template-columns: 1fr; }
+      .detail-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="side-nav" aria-label="環境事業部ポータル メニュー">
+    <a href="#top" class="active">環境TOP</a>
+    <a href="#outline">事業概要</a>
+    <a href="#biomass">バイオマス</a>
+    <a href="#works">納入実績</a>
+  </nav>
+
+  <main class="page" id="top">
+    <section class="hero">
+      <div class="hero-inner">
+        <span class="label">環境</span>
+        <h1>環境事業部</h1>
+        <p>環境事業部の概要、製品情報、納入実績、バイオマス関連情報</p>
+      </div>
+    </section>
+
+    <div class="content">
+      <section>
+        <div class="section-head">
+          <div>
+            <h2>環境事業部ポータル</h2>
+            <p>資源循環エンジニアリング、バイオマス関連、長期包括運営委託事業</p>
+          </div>
+        </div>
+
+        <div class="portal-grid">
+          <a class="portal-card large" href="#outline">
+            <img src="images/図2.png" alt="事業概要イメージ" />
+            <div class="txt">
+              <h3>事業概要</h3>
+              <p>一般廃棄物の破砕処理施設、リサイクルセンターを中心に多数のプラント実績</p>
+            </div>
+          </a>
+          <a class="portal-card" href="#plant">
+            <img src="images/図3.png" alt="プラントエンジニアリング製品イメージ" />
+            <div class="txt">
+              <h3>エンジニアリング</h3>
+              <p>破砕機、マテリアルリサイクル、ごみ中継、固形燃料化など</p>
+            </div>
+          </a>
+          <a class="portal-card" href="#biomass">
+            <img src="images/図5.png" alt="バイオマス関連イメージ" />
+            <div class="txt">
+              <h3>バイオマス関連</h3>
+              <p>バイオブリケット、バイオマスボイラー、バイオガス施設、Kantainer</p>
+            </div>
+          </a>
+          <a class="portal-card" href="#works">
+            <img src="images/図6.png" alt="納入実績イメージ" />
+            <div class="txt">
+              <h3>納入実績</h3>
+              <p>全国に214施設の納入実績</p>
+            </div>
+          </a>
+          <a class="portal-card" href="#products">
+            <img src="images/図4.png" alt="長期包括運営委託事業イメージ" />
+            <div class="txt">
+              <h3>長期包括運営委託事業</h3>
+              <p>極東サービスエンジニア</p>
+            </div>
+          </a>
+        </div>
+      </section>
+
+      <section class="slide-area" id="slides">
+        <div class="section-head">
+          <div>
+            <h2>事業紹介</h2>
+            <p>各事業の紹介です。詳細はクリックしてください</p>
+          </div>
+        </div>
+
+        <div class="slide-controls">
+          <button class="filter-btn active" data-filter="all">すべて</button>
+          <button class="filter-btn" data-filter="outline">事業概要</button>
+          <button class="filter-btn" data-filter="plant">エンジニアリング</button>
+          <button class="filter-btn" data-filter="biomass">バイオマス</button>
+          <button class="filter-btn" data-filter="works">納入実績</button>
+          <button class="filter-btn" data-filter="products">製品情報</button>
+        </div>
+
+        <div class="slide-grid">
+          <article class="slide-card" data-category="outline">
+            <figure><img src="images/slide2.png" alt="事業概要" onclick="openLightbox(this.src)"></figure>
+            <div class="body"><h3>事業概要</h3><p>一般廃棄物の破砕処理施設、リサイクルセンターを中心に多数のプラント実績計画～運営まで、一気通貫したエンジニアリングに対応</p></div>
+          </article>
+          <article class="slide-card" data-category="plant" id="plant">
+            <figure><img src="images/slide3.png" alt="極東・トレマッシュ破砕機" onclick="openLightbox(this.src)"></figure>
+            <div class="body"><h3>破砕機</h3><p>当社オリジナル破砕機　「極東・トレマッシュ破砕機」
+●横型破砕機に必要な押込装置、排出フィーダが不要で経済的です
+●破砕物は機械選別しやすい粒度特性をもち、高い選別精度を期待できます
+●回転するハンマにより機内換気し、可燃ガスによる爆発リスクを低減します
+●優れた耐久性をもち30年以上の稼働実績を誇ります
+●ハンマ交換が容易で、ハンマは摩耗した部分のみの交換が可能で経済的です。</p></div>
+          </article>
+          <article class="slide-card" data-category="plant">
+            <figure><img src="images/slide4.png" alt="マテリアルリサイクル推進施設" onclick="openLightbox(this.src)"></figure>
+            <div class="body"><h3>マテリアルリサイクル推進施設</h3><p>マテリアルリサイクル推進施設は粗大ごみ、不燃ごみ、資源ごみから資源物を選別回収するための施設です。
+50年以上のプラントエンジニアリング実績を生かし、自社製破砕機の『極東・トレマッシェ破砕機®』をはじめ、様々な選別設備を用いて効率的に資源物を選別回収します。</p></div>
+          </article>
+          <article class="slide-card" data-category="plant">
+            <figure><img src="images/slide5.png" alt="ごみ中継施設" onclick="openLightbox(this.src)"></figure>
+            <div class="body"><h3>ごみ中継施設</h3><p>ごみ処理の広域化処理の要求に伴い、複数の施設を統合・集約した大規模熱回収施設へのごみの輸送を効率よく行う方策として『ごみ中継施設』があります。
+各地域より収集したごみを『ごみ中継施設』一か所に集め、コンパクタで圧縮したごみを大型コンテナに積替え輸送することで輸送車両の台数を最適化し高効率の輸送を実現することが可能です。</p></div>
+          </article>
+          <article class="slide-card" data-category="plant">
+            <figure><img src="images/slide6.png" alt="ごみ固形燃料化施設" onclick="openLightbox(this.src)"></figure>
+            <div class="body"><h3>ごみ固形燃料化施設</h3><p>一般廃棄物の生ごみを含む可燃ごみをエネルギーとして利用できるように固形燃料(RDF)を製造</p></div>
+          </article>
+          <article class="slide-card" data-category="plant">
+            <figure><img src="images/slide7.png" alt="災害廃棄物仮設処理施設" onclick="openLightbox(this.src)"></figure>
+            <div class="body"><h3>災害廃棄物仮設処理施設</h3><p>災害発生直後の復旧支援には、迅速な災害廃棄物の処理が必須となります。本機は有事の際に被災地において機動的にオンサイト処理が行える、移動式破砕機です。発電機を搭載し、現場インフラ状況にかかわらず稼動することが可能です。
+平成23年3月に発生した「東日本大震災」において、平成25年4月～9月中旬までの約5ヶ月間、現地での廃棄物処理が完了するまで順調に稼動を続け、地域の環境保全、復興事業に大きな貢献を果たしました。</p></div>
+          </article>
+          <article class="slide-card" data-category="plant">
+            <figure><img src="images/slide8.png" alt="バイオガス施設" onclick="openLightbox(this.src)"></figure>
+            <div class="body"><h3>バイオガス施設</h3><p>ふん尿や生ごみ・食品残さなどの有機系廃棄物から、クリーンエネルギーを生み出すことで、化石燃料の使用量やCO2排出量を削減し、地球環境保全・カーボンニュートラル社会に貢献します</p></div>
+          </article>
+          <article class="slide-card" data-category="plant">
+            <figure><img src="images/slide9.png" alt="長期包括運営委託事業" onclick="openLightbox(this.src)"></figure>
+            <div class="body"><h3>長期包括運営委託事業</h3><p>極東サービスエンジニアリング（以下 KSE）は、環境保全設備のパイオニア・極東開発工業の実績・ノウハウを活かし、
+地方自治体の委託を受け、ごみ処理施設やリサイクルセンターの運転・管理を行っています。KSEが担うのは、資源リサイクル工程の中で、収集されたごみを品種ごとに選別し、圧縮梱包、再生工場へ出荷するまでの、
+いわゆる中間処理と呼ばれる部分です。現在では全国約30カ所の施設の運営・管理を受託しています。</p></div>
+          </article>
+          <article class="slide-card" data-category="biomass" id="biomass">
+            <figure><img src="images/slide10.png" alt="バイオマス関連" onclick="openLightbox(this.src)"></figure>
+            <div class="body"><h3>バイオマス関連</h3><p>地域循環エネルギーの創出　燃料づくりから設備導入まで、技術と実績で地域資源と自治体・地域産業をつなぎます。資源と需要を見える化し、最適な設備構成をトータルエンジニアリング。供給から利用・運用までつながる「地域に根付づく循環モデル」づくりを支えます。</p></div>
+          </article>
+          <article class="slide-card" data-category="products">
+            <figure><img src="images/slide13.png" alt="突き押し式成形機" onclick="openLightbox(this.src)"></figure>
+            <div class="body"><h3>突き押し式成形機</h3><p>地域の未利用バイオマス原料を高密度に固形化したカーボンニュートラルな燃料です。
+石炭コークス燃料を使用しているお客様に、このバイオブリケットを代替燃料としてご提案することで、燃料代の削減とCO2排出量の削減に貢献することができます。</p></div>
+          </article>
+          <article class="slide-card" data-category="products biomass">
+            <figure><img src="images/slide14.png" alt="木質バイオマスボイラーユニット" onclick="openLightbox(this.src)"></figure>
+            <div class="body"><h3>木質バイオマスボイラーユニット</h3><p>木質チップを燃焼として使用し、燃焼コストを大幅削減し、ＣＯ２排出量は実質ゼロ。カーボンニュートラルな熱エネルギー供給を実現。</p></div>
+          </article>
+　　　　　<article class="slide-card" data-category="products">
+            <figure><img src="images/slide12.png" alt="Kantainer" onclick="openLightbox(this.src)"></figure>
+            <div class="body"><h3>Kantainer</h3><p>乾燥・輸送・荷役作業・貯留の４役に対応できる乾燥システム</p></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="detail-block">
+        <h2>次段階で詳細化する領域</h2>
+        <div class="detail-grid">
+          <div class="detail-item">
+            <h3>製品紹介</h3>
+            <ul>
+              <li>カタログPDFへのリンク</li>
+              <li>製品写真、仕様表、導入条件</li>
+              <li>問い合わせ、実績、動画への導線</li>
+            </ul>
+          </div>
+          <div class="detail-item">
+            <h3>バイオマス関連</h3>
+            <ul>
+              <li>バイオブリケット</li>
+              <li>木質バイオマスボイラー</li>
+              <li>燃料輸送、乾燥コンテナ、バイオガス</li>
+            </ul>
+          </div>
+          <div class="detail-item">
+            <h3>納入実績</h3>
+            <ul>
+              <li>実績一覧</li>
+              <li>地域別、施設種類別の絞り込み</li>
+              <li>Google Map埋め込み</li>
+            </ul>
+          </div>
+          <div class="detail-item">
+            <h3>社内ポータル用途</h3>
+            <ul>
+              <li>OneDriveやSharePoint上の資料リンク集</li>
+              <li>担当者別フォルダではなく、用途別に見せる</li>
+              <li>画像中心で直感的に探せる入口にする</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="detail-block" id="map-area">
+        <h2>納入実績 </h2>
+        <div class="map-placeholder">
+&lt;iframe src="<iframe src="https://www.google.com/maps/d/embed?mid=1XdX7YNdSXjM3ykcMrFykRzSkttbB6No&ehbc=2E312F" width="900" height="480"></iframe>/iframe&gt;
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <div class="lightbox" id="lightbox" onclick="closeLightbox()">
+    <button type="button" onclick="closeLightbox(); event.stopPropagation();">閉じる</button>
+    <img id="lightboxImg" src="" alt="拡大画像" />
+  </div>
+
+  <script>
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    const slideCards = document.querySelectorAll('.slide-card');
+
+    filterButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        const filter = button.dataset.filter;
+        filterButtons.forEach(btn => btn.classList.remove('active'));
+        button.classList.add('active');
+
+        slideCards.forEach(card => {
+          const categories = card.dataset.category || '';
+          const show = filter === 'all' || categories.split(' ').includes(filter);
+          card.style.display = show ? '' : 'none';
+        });
+      });
+    });
+
+    function openLightbox(src) {
+      document.getElementById('lightboxImg').src = src;
+      document.getElementById('lightbox').classList.add('open');
+    }
+
+    function closeLightbox() {
+      document.getElementById('lightbox').classList.remove('open');
+      document.getElementById('lightboxImg').src = '';
+    }
+
+    // 左メニューの現在位置ハイライト
+    const navLinks = document.querySelectorAll('.side-nav a');
+    window.addEventListener('scroll', () => {
+      let current = 'top';
+      ['outline','biomass','works'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el && el.getBoundingClientRect().top < 180) current = id;
+      });
+      navLinks.forEach(link => {
+        const target = link.getAttribute('href').replace('#','');
+        link.classList.toggle('active', target === current || (current === 'top' && target === 'top'));
+      });
+    });
+  </script>
+</body>
+</html>
